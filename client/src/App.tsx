@@ -1,9 +1,10 @@
 import LoginForm from "./components/LoginForm";
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext, useState, Fragment } from "react";
 import { Context } from ".";
 import { observer } from "mobx-react-lite";
 import { IUser } from "./models/IUser";
 import UserService from "./services/UserService";
+import "./app.scss";
 
 function App() {
   const { store } = useContext(Context);
@@ -32,15 +33,38 @@ function App() {
   }
   return (
     <div className="App">
-      <h1>{store.isAuth ? `Пользователь авторизован ${store.user.email}` : "АВТОРИЗУЙТЕСЬ"}</h1>
-      <h1>{store.user.isActivated ? "Аккаунт активирован" : "ПОДТВЕРДИТЕ АККАУНТ!!"}</h1>
-      <button onClick={() => store.logout()}>Выйти</button>
-      <div>
-        <button onClick={getUsers}>Получить пользователей</button>
-      </div>
-      {users.map((user) => (
-        <div key={user.email}>{user.email}</div>
-      ))}
+      {store.isAuth && store.user.isActivated && (
+        <h1 className="activated">Пользователь авторизован {store.user.email}</h1>
+      )}
+      {!store.user.isActivated && <h1 className="noActivated">Вам нужно активировать аккаунт с помощью почты</h1>}
+      <button className="logOut" onClick={() => store.logout()}>
+        Выйти
+      </button>
+      {store.user.isActivated && (
+        <div className="users-Wrapper">
+          <button onClick={getUsers} className="getUsers">
+            Получить пользователей
+          </button>
+          {users.length ? (
+            <table>
+              <thead>
+                <tr>
+                  <th>Email пользователя</th>
+                  <th>Активирован</th>
+                </tr>
+              </thead>
+              {users.map((user) => (
+                <tbody key={user.email}>
+                  <tr>
+                    <td>{user.email}</td>
+                    <td className="isActivated">{user.isActivated ? "Да" : "Нет"}</td>
+                  </tr>
+                </tbody>
+              ))}
+            </table>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 }

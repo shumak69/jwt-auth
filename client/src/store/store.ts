@@ -10,6 +10,7 @@ export default class Store {
   user = {} as IUser;
   isAuth = false;
   isLoading = false;
+  error = "" as string | undefined;
   constructor() {
     makeAutoObservable(this);
   }
@@ -26,6 +27,10 @@ export default class Store {
     this.isLoading = bool;
   }
 
+  setError(err: string | undefined) {
+    this.error = err;
+  }
+
   async login(email: string, password: string) {
     try {
       const response = await AuthService.login(email, password);
@@ -35,6 +40,7 @@ export default class Store {
       this.setAuth(true);
       this.setUser(response.data.user);
     } catch (error) {
+      this.setError((error as AxiosError<{ message: string }>).response?.data.message);
       console.log((error as AxiosError<{ message: string }>).response?.data.message);
     }
   }
@@ -46,14 +52,16 @@ export default class Store {
       localStorage.setItem("token", response.data.accessToken);
       this.setAuth(true);
       this.setUser(response.data.user);
+      this.setError("");
     } catch (error) {
+      this.setError((error as AxiosError<{ message: string }>).response?.data.message);
       console.log((error as AxiosError<{ message: string }>).response?.data.message);
     }
   }
 
   async logout() {
     try {
-      const response = await AuthService.logout();
+      await AuthService.logout();
       localStorage.removeItem("token");
       this.setAuth(false);
       this.setUser({} as IUser);
