@@ -1,0 +1,35 @@
+@media (max-width: 992px) {
+  #root {
+    width: 90%;
+  }
+}
+
+@media (max-width: 576px) {
+  .login-form .email,
+  .login-form .password {
+    width: 100%;
+  }
+  body {
+    padding: 15px 5px;
+  }
+  #root {
+    padding: 10px;
+  }
+  button {
+    width: 100%;
+  }
+  .activated {
+    font-size: 16px;
+    max-width: 78%;
+  }
+  .logOut {
+    top: 7px;
+    width: 67px;
+  }
+  .isActivated {
+    display: none;
+  }
+  .noActivated {
+    font-size: 20px;
+  }
+}

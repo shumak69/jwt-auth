@@ -11,6 +11,7 @@ export default class Store {
   isAuth = false;
   isLoading = false;
   error = "" as string | undefined;
+  isMountLoading = false;
   constructor() {
     makeAutoObservable(this);
   }
@@ -27,11 +28,16 @@ export default class Store {
     this.isLoading = bool;
   }
 
+  setMountLoading(bool: boolean) {
+    this.isMountLoading = bool;
+  }
+
   setError(err: string | undefined) {
     this.error = err;
   }
 
   async login(email: string, password: string) {
+    this.setLoading(true);
     try {
       const response = await AuthService.login(email, password);
       console.log(response);
@@ -42,10 +48,13 @@ export default class Store {
     } catch (error) {
       this.setError((error as AxiosError<{ message: string }>).response?.data.message);
       console.log((error as AxiosError<{ message: string }>).response?.data.message);
+    } finally {
+      this.setLoading(false);
     }
   }
 
   async registration(email: string, password: string) {
+    this.setLoading(true);
     try {
       const response = await AuthService.registration(email, password);
       console.log(response);
@@ -56,6 +65,8 @@ export default class Store {
     } catch (error) {
       this.setError((error as AxiosError<{ message: string }>).response?.data.message);
       console.log((error as AxiosError<{ message: string }>).response?.data.message);
+    } finally {
+      this.setLoading(false);
     }
   }
 
@@ -71,7 +82,7 @@ export default class Store {
   }
 
   async checkAuth() {
-    this.setLoading(true);
+    this.setMountLoading(true);
     try {
       const response = await axios.get<AuthResponse>(`${API_URL}/refresh`, { withCredentials: true });
       console.log(response);
@@ -81,7 +92,7 @@ export default class Store {
     } catch (error) {
       console.log((error as AxiosError<{ message: string }>).response?.data.message);
     } finally {
-      this.setLoading(false);
+      this.setMountLoading(false);
     }
   }
 }

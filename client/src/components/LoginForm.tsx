@@ -21,13 +21,23 @@ function LoginForm() {
     store.setError("");
   }, []);
 
-  const registration = () => {
+  const validate = () => {
     if (checkEmail(email) === -1) {
       setIsCorrectEmail(false);
     } else {
       setIsCorrectEmail(true);
     }
     setIsCorrectPassword(checkPassword(password));
+  };
+
+  const login = () => {
+    validate();
+
+    store.login(email, password);
+  };
+
+  const registration = () => {
+    validate();
     store.registration(email, password);
   };
   return (
@@ -57,10 +67,11 @@ function LoginForm() {
         )}
       </div>
       {store.error && <div className="error">{store.error}</div>}
-      <button onClick={() => store.login(email, password)} className="login">
+      {store.error === undefined && <div className="error">Непредвиденная ошибка</div>}
+      <button onClick={login} className="login" disabled={store.isLoading}>
         Логин
       </button>
-      <button onClick={registration} className="registration">
+      <button onClick={registration} className="registration" disabled={store.isLoading}>
         Регистрация
       </button>
     </div>
